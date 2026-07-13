@@ -1,4 +1,4 @@
-project_id = "nvfulebzhtopywcjqbwr"
+project_id = "yntqzzlbzzhrcrlkzisa"
 
 [functions.recognize-image]
 verify_jwt = false
