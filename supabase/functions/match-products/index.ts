@@ -89,6 +89,8 @@ serve(async (req) => {
         const SYNONYM_TERMS: Record<string, string[]> = {
           cereali: ["corn flakes", "cornflakes", "fiocchi", "muesli", "granola", "anellini", "palline", "soffietti", "riso soffiato", "avena"],
           cereale: ["corn flakes", "cornflakes", "fiocchi", "muesli", "granola", "anellini", "palline", "soffietti", "riso soffiato", "avena"],
+          fritto: ["panatura", "panare", "friggere"],
+          fritti: ["panatura", "panare", "friggere"],
         };
         const synonyms = SYNONYM_TERMS[ingNameLower] || [];
         synonyms.forEach((s) => mandatorySet.add(s));
@@ -261,6 +263,10 @@ serve(async (req) => {
             caffe: {
               boost: /^caff[eè]\b|\bcaff[eè]\s+(macinato|in\s+grani|solubile|moka|espresso)\b/i,
               penalize: /\b(biscott|merendin|snack|crema|torta|gelato|cioccolat|tiramis|wafer)/i,
+            },
+            panatura: {
+              boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati|pasta|cereali|biscott|merendin)/i,
             },
           };
             const readyRule = READY_PRODUCT_TERMS[ingNameLower] ||
