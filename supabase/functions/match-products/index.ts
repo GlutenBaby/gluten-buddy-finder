@@ -266,7 +266,15 @@ serve(async (req) => {
             },
             panatura: {
               boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
-              penalize: /\b(farina|farine|mix|preparato|preparati|pasta|cereali|biscott|merendin)/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati)/i,
+            },
+            fritto: {
+              boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati)/i,
+            },
+            fritti: {
+              boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati)/i,
             },
           };
             const readyRule = READY_PRODUCT_TERMS[ingNameLower] ||
