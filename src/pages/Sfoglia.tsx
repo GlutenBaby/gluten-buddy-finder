@@ -168,6 +168,8 @@ export default function Sfoglia() {
       let query = supabase
         .from("products")
         .select("id, name, brand, image_url, product_url, category")
+        .not("image_url", "is", null)
+        .neq("image_url", "")
         .order("name", { ascending: true })
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 

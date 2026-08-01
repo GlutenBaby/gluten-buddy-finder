@@ -139,6 +139,8 @@ serve(async (req) => {
           const { data, error } = await supabase
             .from("products")
             .select("*")
+            .not("image_url", "is", null)
+            .neq("image_url", "")
             .or(orFilters)
             .limit(120);
           if (error) console.error("keyword query error", error);
