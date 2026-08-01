@@ -29,6 +29,8 @@ export default function Results() {
   const [dishName, setDishName] = useState("");
   const [loading, setLoading] = useState(true);
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
+  // Products whose image_url fails to load — hidden like pictureless ones
+  const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const raw = sessionStorage.getItem("gb_confirmed");
@@ -126,7 +128,7 @@ export default function Results() {
               </Card>
             ) : (
               <div className="grid grid-cols-2 gap-3">
-                {m.products.map((p) => (
+                {m.products.filter((p) => !brokenIds.has(p.id)).map((p) => (
                   <Card
                     key={p.id}
                     className="overflow-hidden shadow-soft transition-transform hover:scale-[1.02]"
@@ -138,6 +140,9 @@ export default function Results() {
                           alt={p.name}
                           className="h-full w-full object-cover"
                           loading="lazy"
+                          onError={() =>
+                            setBrokenIds((s) => new Set(s).add(p.id))
+                          }
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center">

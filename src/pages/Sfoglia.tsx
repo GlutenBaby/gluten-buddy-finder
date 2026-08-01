@@ -138,6 +138,9 @@ export default function Sfoglia() {
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  // Products whose image_url is set but fails to load (dead link, hotlink
+  // protection…) — hidden from the grid, same as products without a photo.
+  const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -347,7 +350,7 @@ export default function Sfoglia() {
         {/* Product grid */}
         {!loading && products.length > 0 && (
           <div className="grid grid-cols-2 gap-3">
-            {products.map((p) => {
+            {products.filter((p) => !brokenIds.has(p.id)).map((p) => {
               const isFav = favIds.has(p.id);
               return (
                 <div
@@ -360,6 +363,9 @@ export default function Sfoglia() {
                         src={p.image_url}
                         alt={p.name}
                         loading="lazy"
+                        onError={() =>
+                          setBrokenIds((s) => new Set(s).add(p.id))
+                        }
                         className="h-full w-full object-contain"
                       />
                     ) : (
