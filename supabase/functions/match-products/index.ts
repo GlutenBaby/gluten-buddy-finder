@@ -91,6 +91,7 @@ serve(async (req) => {
           cereale: ["corn flakes", "cornflakes", "fiocchi", "muesli", "granola", "anellini", "palline", "soffietti", "riso soffiato", "avena"],
           fritto: ["panatura", "panare", "friggere"],
           fritti: ["panatura", "panare", "friggere"],
+          "fritto misto": ["panatura"],
         };
         const synonyms = SYNONYM_TERMS[ingNameLower] || [];
         synonyms.forEach((s) => mandatorySet.add(s));
@@ -273,6 +274,10 @@ serve(async (req) => {
               penalize: /\b(farina|farine|mix|preparato|preparati)/i,
             },
             fritti: {
+              boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati)/i,
+            },
+            "fritto misto": {
               boost: /\b(panatura|panare|impanare|panato|panata|panatura\s+senza\s+glutine)/i,
               penalize: /\b(farina|farine|mix|preparato|preparati)/i,
             },
