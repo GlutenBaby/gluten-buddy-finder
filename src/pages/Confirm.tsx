@@ -61,6 +61,10 @@ export default function Confirm() {
   const [newCat, setNewCat] = useState("pasta");
   const [previewProducts, setPreviewProducts] = useState<PreviewProduct[]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
+  // Products whose image_url fails to load (dead link, hotlink protection…)
+  // — hidden from the preview, same as in Results and Sfoglia.
+  const [brokenIds, setBrokenIds] = useState<Set<string>>(new Set());
+  const visiblePreview = previewProducts.filter((p) => !brokenIds.has(p.id));
 
   useEffect(() => {
     const raw = sessionStorage.getItem("gb_scan");
@@ -222,7 +226,7 @@ export default function Confirm() {
           )}
         </div>
 
-        {(previewLoading || previewProducts.length > 0) &&
+        {(previewLoading || visiblePreview.length > 0) &&
           ingredients.length > 0 && (
             <div>
               <h3 className="mb-2 text-sm font-semibold">
@@ -241,7 +245,7 @@ export default function Confirm() {
                           <div className="mt-1 h-3 w-1/2 rounded bg-secondary" />
                         </div>
                       ))
-                    : previewProducts.map((p) => (
+                    : visiblePreview.map((p) => (
                         <a
                           key={p.id}
                           href={p.product_url}
@@ -255,6 +259,9 @@ export default function Confirm() {
                                 src={p.image_url}
                                 alt={p.name}
                                 loading="lazy"
+                                onError={() =>
+                                  setBrokenIds((s) => new Set(s).add(p.id))
+                                }
                                 className="h-full w-full object-contain"
                               />
                             ) : (
