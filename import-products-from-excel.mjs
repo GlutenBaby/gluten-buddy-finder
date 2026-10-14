@@ -5,7 +5,7 @@
 // into your NEW Supabase project's `products` table.
 //
 // The script is tolerant of column-name variations (Italian or English)
-// so it works directly with whatever your Lovable exporter spits out.
+// so it works directly with whatever your catalog exporter spits out.
 //
 // Usage:
 //   1. Install xlsx parser ONCE (only needed first time):

@@ -65,7 +65,7 @@ serve(async (req) => {
 
     // Google Generative Language API — OpenAI-compatible endpoint.
     // Lets us reuse the same {messages, tools, tool_choice} request shape
-    // we used through the Lovable gateway. Same Bearer auth, same response.
+    // we used through the previous AI gateway. Same Bearer auth, same response.
     // Docs: https://ai.google.dev/gemini-api/docs/openai
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",

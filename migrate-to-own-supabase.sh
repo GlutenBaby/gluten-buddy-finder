@@ -2,7 +2,7 @@
 # migrate-to-own-supabase.sh
 #
 # Wires the Gluten Baby codebase to YOUR dedicated Supabase project
-# (yntqzzlbzzhrcrlkzisa) instead of the Lovable-managed one.
+# (yntqzzlbzzhrcrlkzisa) instead of the previously managed one.
 #
 # What this does:
 #   1. Logs into Supabase CLI (interactive, one-time)

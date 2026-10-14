@@ -4,7 +4,7 @@ Vite + React + TypeScript + Tailwind, wrapped in Capacitor for iOS.
 Developed solo by Riccardo Cook. Camilla Andreolli is admin. Sette pending admin.
 
 ## Where things live
-- GitHub: https://github.com/RichiCook/gluten-buddy-finder (main branch)
+- GitHub: https://github.com/GlutenBaby/gluten-buddy-finder (main branch)
 - Web preview (always-latest): https://glutenbb-web.vercel.app
 - iOS app: TestFlight (Build 5 currently live on the pre-redesign codebase)
 - Supabase backend: project `yntqzzlbzzhrcrlkzisa` ("GlutenBaby's Org")
@@ -37,7 +37,7 @@ Columns: id, name, brand, description, image_url, product_url, category (`produc
 `product_category` enum values:
 `pasta, biscotti, pane, farina, dolci, snack, cereali, pizza, bevande, altro` plus anything admin added via Mission Control / Categories.
 
-14,358 products imported from old Lovable Cloud catalog on 13 Jun 2026.
+14,358 products imported from the old hosted catalog on 13 Jun 2026.
 
 ## Common workflow
 
@@ -87,6 +87,6 @@ Columns: id, name, brand, description, image_url, product_url, category (`produc
 - Plus a one-line: `ALTER TYPE public.product_category ADD VALUE IF NOT EXISTS 'bevande';`
 
 ## Don't do
-- Don't reintroduce Lovable Cloud dependencies (`ai.gateway.lovable.dev`, `LOVABLE_API_KEY`, `server.url` in capacitor.config). User migrated AWAY from these and wants them gone.
+- Don't reintroduce the old hosted app-builder's dependencies: no third-party AI gateway or its API-key secret (AI calls go straight to Gemini with `GEMINI_API_KEY`), no builder dev plugin in `vite.config.ts`, no `server.url` in capacitor.config. User migrated AWAY from these and wants them gone.
 - Don't set up GitHub → Vercel auto-deploy. User explicitly opted out — they prefer manual deploys.
 - Don't store secrets in the repo. Only public `VITE_*` keys belong in `.env`.

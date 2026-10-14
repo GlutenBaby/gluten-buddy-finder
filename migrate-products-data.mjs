@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // migrate-products-data.mjs
 //
-// One-shot copy of the `products` table from the OLD Lovable Cloud
+// One-shot copy of the `products` table from the OLD hosted
 // Supabase into your NEW dedicated Supabase project.
 //
 // Reads from OLD using the public anon key (allowed because the OLD
