@@ -258,6 +258,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_product_categories: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          n: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"

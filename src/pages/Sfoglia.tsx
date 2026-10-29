@@ -16,18 +16,73 @@ interface Product {
   category: string;
 }
 
-const CATEGORIES: { id: string; label: string; emoji: string }[] = [
-  { id: "all", label: "Tutti", emoji: "✨" },
+interface Category {
+  id: string;
+  label: string;
+  emoji: string;
+}
+
+// Label + emoji for categories we know about, in pill order. Categories added
+// later via Mission Control are fetched from the DB at runtime and appended
+// after these (before "altro") with a label derived from the enum value.
+const KNOWN_CATEGORIES: Category[] = [
   { id: "pasta", label: "Pasta", emoji: "🍝" },
   { id: "pane", label: "Pane", emoji: "🍞" },
   { id: "biscotti", label: "Biscotti", emoji: "🍪" },
   { id: "pizza", label: "Pizza", emoji: "🍕" },
   { id: "bevande", label: "Bevande", emoji: "🥤" },
   { id: "dolci", label: "Dolci", emoji: "🍰" },
+  { id: "merendine", label: "Merendine", emoji: "🧁" },
   { id: "snack", label: "Snack", emoji: "🥨" },
+  { id: "barrette", label: "Barrette", emoji: "🍫" },
   { id: "cereali", label: "Cereali", emoji: "🌾" },
+  { id: "fette-biscottate", label: "Fette biscottate", emoji: "🍞" },
+  { id: "creme", label: "Creme", emoji: "🥄" },
+  { id: "panettone-pandoro", label: "Panettone e pandoro", emoji: "🎄" },
   { id: "farina", label: "Farina", emoji: "🥐" },
+  { id: "polenta", label: "Polenta", emoji: "🌽" },
+  { id: "legumi", label: "Legumi", emoji: "🫘" },
   { id: "altro", label: "Altro", emoji: "⭐" },
+];
+
+const ALL_CATEGORY: Category = { id: "all", label: "Tutti", emoji: "✨" };
+const DEFAULT_EMOJI = "🏷️";
+
+// "fette-biscottate" → "Fette biscottate"
+function labelFromId(id: string): string {
+  const words = id.replace(/[-_]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+// Merge the DB category list with the known metadata. Empty categories are
+// hidden; unknown ones go after the known ones, "altro" always last.
+function buildCategories(rows: { category: string; n: number }[]): Category[] {
+  const nonEmpty = new Set(
+    rows.filter((r) => Number(r.n) > 0).map((r) => r.category),
+  );
+  const knownIds = new Set(KNOWN_CATEGORIES.map((c) => c.id));
+  const known = KNOWN_CATEGORIES.filter(
+    (c) => c.id !== "altro" && nonEmpty.has(c.id),
+  );
+  const extra = [...nonEmpty]
+    .filter((id) => !knownIds.has(id))
+    .sort()
+    .map((id) => ({ id, label: labelFromId(id), emoji: DEFAULT_EMOJI }));
+  const altro = KNOWN_CATEGORIES.filter(
+    (c) => c.id === "altro" && nonEmpty.has(c.id),
+  );
+  return [ALL_CATEGORY, ...known, ...extra, ...altro];
+}
+
+// Used until the DB list arrives, or if the call fails.
+const FALLBACK_CATEGORIES: Category[] = [
+  ALL_CATEGORY,
+  ...KNOWN_CATEGORIES.filter((c) =>
+    [
+      "pasta", "pane", "biscotti", "pizza", "bevande", "dolci",
+      "snack", "cereali", "farina", "altro",
+    ].includes(c.id),
+  ),
 ];
 
 // Smart filter: when the DB `category` column is wrong (most products were
@@ -134,6 +189,7 @@ export default function Sfoglia() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
+  const [categories, setCategories] = useState<Category[]>(FALLBACK_CATEGORIES);
   const [products, setProducts] = useState<Product[]>([]);
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(0);
@@ -152,6 +208,15 @@ export default function Sfoglia() {
     }, 250);
     return () => clearTimeout(t);
   }, [search]);
+
+  // Load the category pills from the DB so categories added in Mission
+  // Control show up without a code change.
+  useEffect(() => {
+    void supabase.rpc("list_product_categories").then(({ data, error }) => {
+      if (error || !data) return;
+      setCategories(buildCategories(data));
+    });
+  }, []);
 
   // Reset page when category changes
   useEffect(() => {
@@ -297,7 +362,7 @@ export default function Sfoglia() {
         {/* Category pills — horizontal scroll */}
         <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex gap-2">
-            {CATEGORIES.map((c) => {
+            {categories.map((c) => {
               const active = category === c.id;
               return (
                 <button
