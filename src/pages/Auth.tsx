@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
+import { LegalNotice } from "@/components/LegalNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -116,6 +117,7 @@ export default function Auth() {
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Crea account
                 </Button>
+                <LegalNotice />
               </form>
             </TabsContent>
           </Tabs>

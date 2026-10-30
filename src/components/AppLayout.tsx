@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
+import { PRIVACY_URL } from "./LegalNotice";
 import appBackground from "@/assets/app-background.jpeg";
 
 import { Link } from "react-router-dom";
@@ -39,6 +40,14 @@ export function AppLayout({
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6">{children}</main>
+      <footer className="mx-auto flex max-w-lg justify-center gap-3 px-4 pb-4 text-xs text-muted-foreground">
+        <Link to="/termini" className="underline">
+          Termini e Condizioni
+        </Link>
+        <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="underline">
+          Privacy
+        </a>
+      </footer>
       <BottomNav />
     </div>
   );

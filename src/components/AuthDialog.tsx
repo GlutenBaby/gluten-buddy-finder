@@ -10,6 +10,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LegalNotice } from "@/components/LegalNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -117,6 +118,7 @@ export function AuthDialog({
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Crea account e continua
               </Button>
+              <LegalNotice onNavigate={() => onOpenChange(false)} />
             </form>
           </TabsContent>
 

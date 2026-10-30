@@ -23,6 +23,7 @@ Developed solo by Riccardo Cook. Camilla Andreolli is admin. Sette pending admin
 - `src/pages/Results.tsx` — alternatives grid after Conferma.
 - `src/pages/Sfoglia.tsx` — catalog browser. Search, smart category filter (matches enum + name patterns), paginated grid.
 - `src/pages/Favorites.tsx`, `Account.tsx`, `Auth.tsx`, `Admin.tsx`
+- `src/pages/Terms.tsx` (route `/termini`) and `docs/index.html` (privacy policy, on GitHub Pages) — legal pages. Links via `src/components/LegalNotice.tsx` and the `AppLayout` footer.
 - `src/components/AppLayout.tsx` — sticky header w/ optional `topbar` slot, bottom nav, cream wheat bg.
 - `src/components/BottomNav.tsx` — 4 tabs: Home / Sfoglia / Salvati / Account (+ Admin).
 - `src/components/AuthDialog.tsx` — modal sign-up + sign-in.
