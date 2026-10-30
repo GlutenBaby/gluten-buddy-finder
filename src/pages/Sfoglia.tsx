@@ -85,10 +85,10 @@ const FALLBACK_CATEGORIES: Category[] = [
   ),
 ];
 
-// Smart filter: when the DB `category` column is wrong (most products were
-// imported as "altro"), we also match products whose name contains any of
-// these patterns. So a product called "Frollini Schär" with category="altro"
-// still shows up when the user taps Biscotti.
+// Smart filter: many products were imported as "altro", so for those we also
+// match names containing any of these patterns. A product called "Frollini
+// Schär" with category="altro" still shows up when the user taps Biscotti.
+// Products with any other category only appear under that category.
 const CATEGORY_NAME_PATTERNS: Record<string, string[]> = {
   pasta: [
     "%past%",
@@ -242,17 +242,18 @@ export default function Sfoglia() {
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
       if (category !== "all") {
-        // Smart category filter: match the DB enum value OR any name pattern
-        // that's characteristic of this category. Catches products that were
-        // imported with the wrong category enum but have a clear name.
+        // Smart category filter: match the DB enum value, plus products still
+        // uncategorized ("altro") whose name is characteristic of this
+        // category. A product with a real category only shows up there, so
+        // e.g. a panettone moved to panettone-pandoro doesn't match "%pane%".
         const patterns = CATEGORY_NAME_PATTERNS[category] ?? [];
-        const orParts = [`category.eq.${category}`];
-        for (const p of patterns) {
+        let filter = `category.eq.${category}`;
+        if (patterns.length > 0) {
           // Escape commas in the pattern (would break PostgREST .or() syntax)
-          // and quote it in case it contains spaces.
-          orParts.push(`name.ilike.${p.replace(/,/g, "")}`);
+          const names = patterns.map((p) => `name.ilike.${p.replace(/,/g, "")}`);
+          filter += `,and(category.eq.altro,or(${names.join(",")}))`;
         }
-        query = query.or(orParts.join(","));
+        query = query.or(filter);
       }
       if (debouncedSearch) {
         const term = `%${debouncedSearch}%`;
