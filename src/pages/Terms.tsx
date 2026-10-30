@@ -105,11 +105,12 @@ export default function Terms() {
 
         <Section title="5. Prodotti e siti di terzi">
           <p>
-            Gluten Baby non vende i prodotti presenti nel catalogo. Il pulsante
-            "Acquista" porta al sito di un venditore terzo: l'eventuale acquisto
-            è un contratto tra te e quel venditore, alle sue condizioni. Prezzi,
-            disponibilità, spedizioni, resi e garanzie dipendono esclusivamente
-            dal venditore.
+            Gluten Baby non vende i prodotti presenti nel catalogo. Il carrello
+            è solo una lista salvata sul tuo dispositivo: non è un ordine e non
+            comporta alcun pagamento. I link portano al sito di un venditore
+            terzo: l'eventuale acquisto è un contratto tra te e quel venditore,
+            alle sue condizioni. Prezzi, disponibilità, spedizioni, resi e
+            garanzie dipendono esclusivamente dal venditore.
           </p>
           <p>
             La presenza di un prodotto nel catalogo non è una garanzia o una

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Star, ShoppingCart, ImageOff, Loader2, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Star, ImageOff, Loader2, X } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { GlutenWarning } from "@/components/GlutenWarning";
 import { supabase } from "@/integrations/supabase/client";
@@ -182,14 +183,26 @@ const CATEGORY_NAME_PATTERNS: Record<string, string[]> = {
 };
 
 const PAGE_SIZE = 30;
+const FILTERS_KEY = "gb_sfoglia_filters";
+
+// Keeps category and search when coming back from a product page.
+function readFilters(): { search: string; category: string } {
+  try {
+    const raw = sessionStorage.getItem(FILTERS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // storage unavailable: start from the defaults
+  }
+  return { search: "", category: "all" };
+}
 
 export default function Sfoglia() {
   const { user } = useAuth();
   const { requestAuth } = useAuthGate();
 
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [category, setCategory] = useState<string>("all");
+  const [search, setSearch] = useState(() => readFilters().search);
+  const [debouncedSearch, setDebouncedSearch] = useState(search.trim());
+  const [category, setCategory] = useState<string>(() => readFilters().category);
   const [categories, setCategories] = useState<Category[]>(FALLBACK_CATEGORIES);
   const [products, setProducts] = useState<Product[]>([]);
   const [favIds, setFavIds] = useState<Set<string>>(new Set());
@@ -218,6 +231,14 @@ export default function Sfoglia() {
       setCategories(buildCategories(data));
     });
   }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FILTERS_KEY, JSON.stringify({ search, category }));
+    } catch {
+      // storage unavailable: filters reset on return
+    }
+  }, [search, category]);
 
   // Reset page when category changes
   useEffect(() => {
@@ -428,15 +449,17 @@ export default function Sfoglia() {
                 >
                   <div className="relative aspect-square bg-secondary">
                     {p.image_url ? (
-                      <img
-                        src={p.image_url}
-                        alt={p.name}
-                        loading="lazy"
-                        onError={() =>
-                          setBrokenIds((s) => new Set(s).add(p.id))
-                        }
-                        className="h-full w-full object-contain"
-                      />
+                      <Link to={`/prodotto/${p.id}`} className="block h-full w-full">
+                        <img
+                          src={p.image_url}
+                          alt={p.name}
+                          loading="lazy"
+                          onError={() =>
+                            setBrokenIds((s) => new Set(s).add(p.id))
+                          }
+                          className="h-full w-full object-contain"
+                        />
+                      </Link>
                     ) : (
                       <div className="grid h-full w-full place-items-center text-muted-foreground">
                         <ImageOff className="h-8 w-8" />
@@ -467,15 +490,12 @@ export default function Sfoglia() {
                         {p.brand}
                       </p>
                     )}
-                    <a
-                      href={p.product_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[11px] font-medium text-primary-foreground"
+                    <Link
+                      to={`/prodotto/${p.id}`}
+                      className="mt-2 flex items-center justify-center rounded-full bg-primary px-3 py-1.5 text-[11px] font-medium text-primary-foreground"
                     >
-                      <ShoppingCart className="h-3 w-3" />
-                      Acquista
-                    </a>
+                      Vedi prodotto
+                    </Link>
                   </div>
                 </div>
               );

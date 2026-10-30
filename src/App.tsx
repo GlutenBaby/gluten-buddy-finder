@@ -5,11 +5,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthGateProvider } from "@/hooks/useAuthGate";
+import { CartProvider } from "@/hooks/useCart";
 import Scan from "./pages/Scan";
 import Confirm from "./pages/Confirm";
 import Results from "./pages/Results";
 import Favorites from "./pages/Favorites";
 import Sfoglia from "./pages/Sfoglia";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
 import Account from "./pages/Account";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -26,18 +29,22 @@ const App = () => (
       <Analytics />
       <BrowserRouter>
         <AuthGateProvider>
-          <Routes>
-            <Route path="/" element={<Scan />} />
-            <Route path="/confirm" element={<Confirm />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/sfoglia" element={<Sfoglia />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/termini" element={<Terms />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<Scan />} />
+              <Route path="/confirm" element={<Confirm />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/sfoglia" element={<Sfoglia />} />
+              <Route path="/prodotto/:id" element={<ProductDetail />} />
+              <Route path="/carrello" element={<Cart />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/termini" element={<Terms />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CartProvider>
         </AuthGateProvider>
       </BrowserRouter>
     </TooltipProvider>

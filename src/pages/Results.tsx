@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { GlutenWarning } from "@/components/GlutenWarning";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShoppingCart, Star, ImageOff } from "lucide-react";
+import { Loader2, Star, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthGate } from "@/hooks/useAuthGate";
 import { toast } from "sonner";
-import { trackEvent } from "@/lib/analytics";
 
 interface Product {
   id: string;
@@ -137,15 +136,17 @@ export default function Results() {
                   >
                     <div className="relative aspect-square bg-muted">
                       {p.image_url ? (
-                        <img
-                          src={p.image_url}
-                          alt={p.name}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                          onError={() =>
-                            setBrokenIds((s) => new Set(s).add(p.id))
-                          }
-                        />
+                        <Link to={`/prodotto/${p.id}`} className="block h-full w-full">
+                          <img
+                            src={p.image_url}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                            onError={() =>
+                              setBrokenIds((s) => new Set(s).add(p.id))
+                            }
+                          />
+                        </Link>
                       ) : (
                         <div className="flex h-full items-center justify-center">
                           <ImageOff className="h-8 w-8 text-muted-foreground" />
@@ -179,15 +180,7 @@ export default function Results() {
                         className="w-full bg-gradient-primary"
                         asChild
                       >
-                      <a
-                          href={p.product_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={() => trackEvent("product_click", { name: p.name, brand: p.brand }, p.id)}
-                        >
-                          <ShoppingCart className="h-3 w-3" />
-                          Acquista
-                        </a>
+                        <Link to={`/prodotto/${p.id}`}>Vedi prodotto</Link>
                       </Button>
                     </div>
                   </Card>

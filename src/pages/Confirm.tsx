@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { GlutenWarning } from "@/components/GlutenWarning";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import {
   Plus,
   ArrowRight,
   RotateCcw,
-  ShoppingCart,
   ImageOff,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -249,11 +248,9 @@ export default function Confirm() {
                         </div>
                       ))
                     : visiblePreview.map((p) => (
-                        <a
+                        <Link
                           key={p.id}
-                          href={p.product_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          to={`/prodotto/${p.id}`}
                           className="w-28 flex-shrink-0 overflow-hidden rounded-xl border border-border bg-card"
                         >
                           <div className="aspect-square bg-secondary">
@@ -282,12 +279,11 @@ export default function Confirm() {
                             <p className="line-clamp-2 text-[10px] font-medium leading-tight text-foreground">
                               {p.name}
                             </p>
-                            <div className="mt-1.5 flex items-center justify-center gap-1 rounded-full bg-primary py-1 text-[9px] font-medium text-primary-foreground">
-                              <ShoppingCart className="h-2.5 w-2.5" />
-                              Acquista
+                            <div className="mt-1.5 flex items-center justify-center rounded-full bg-primary py-1 text-[9px] font-medium text-primary-foreground">
+                              Vedi prodotto
                             </div>
                           </div>
-                        </a>
+                        </Link>
                       ))}
                 </div>
               </div>

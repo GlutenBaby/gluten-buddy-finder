@@ -21,6 +21,7 @@ Developed solo by Riccardo Cook. Camilla Andreolli is admin. Sette pending admin
 - `src/pages/Scan.tsx` — home (route `/`). Apple-style hero + dark pill camera CTA + recent-scans rail.
 - `src/pages/Confirm.tsx` — after a scan. Has clearable dish name input, ingredient pills (X to remove), inline product preview carousel.
 - `src/pages/Results.tsx` — alternatives grid after Conferma.
+- `src/pages/ProductDetail.tsx` (`/prodotto/:id`) — product plus other products from the same vendor. `src/pages/Cart.tsx` + `src/hooks/useCart.tsx` — cart grouped by vendor, stored in localStorage; purchase still happens on the vendor site. Vendor = `product_url` domain (`src/lib/vendor.ts`).
 - `src/pages/Sfoglia.tsx` — catalog browser. Search, smart category filter (matches enum + name patterns), paginated grid.
 - `src/pages/Favorites.tsx`, `Account.tsx`, `Auth.tsx`, `Admin.tsx`
 - `src/pages/Terms.tsx` (route `/termini`) and `docs/index.html` (privacy policy, on GitHub Pages) — legal pages. Links via `src/components/LegalNotice.tsx` and the `AppLayout` footer.

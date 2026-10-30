@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Trash2, ImageOff } from "lucide-react";
+import { Trash2, ImageOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -71,10 +71,7 @@ export default function Favorites() {
                 <h3 className="text-sm font-semibold">{f.product?.name}</h3>
                 <div className="flex gap-2 pt-1">
                   <Button size="sm" className="bg-gradient-primary" asChild>
-                    <a href={f.product?.product_url} target="_blank" rel="noreferrer">
-                      <ShoppingCart className="h-3 w-3" />
-                      Acquista
-                    </a>
+                    <Link to={`/prodotto/${f.product?.id}`}>Vedi prodotto</Link>
                   </Button>
                   <Button
                     size="sm"
