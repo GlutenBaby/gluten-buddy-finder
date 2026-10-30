@@ -6,7 +6,6 @@ import {
   Search,
   Loader2,
   AlertTriangle,
-  Check,
   ArrowUpRight,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
@@ -236,7 +235,7 @@ export default function Scan() {
                       <div
                         className={cn(
                           "mt-1 flex items-center gap-0.5 text-[10px] font-medium",
-                          hasGluten ? "text-destructive" : "text-emerald-700",
+                          hasGluten ? "text-destructive" : "text-muted-foreground",
                         )}
                       >
                         {hasGluten ? (
@@ -246,8 +245,8 @@ export default function Scan() {
                           </>
                         ) : (
                           <>
-                            <Check className="h-2.5 w-2.5" />
-                            Sicuro
+                            <AlertTriangle className="h-2.5 w-2.5" />
+                            Da verificare
                           </>
                         )}
                       </div>

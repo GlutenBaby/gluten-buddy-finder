@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
+import { GlutenWarning } from "@/components/GlutenWarning";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -156,6 +157,8 @@ export default function Confirm() {
   return (
     <AppLayout title="Conferma">
       <div className="space-y-5">
+        <GlutenWarning />
+
         {image && (
           <Card className="overflow-hidden">
             <img src={image} alt="" className="max-h-56 w-full object-cover" />

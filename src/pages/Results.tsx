@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
+import { GlutenWarning } from "@/components/GlutenWarning";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -98,10 +99,12 @@ export default function Results() {
       <div className="space-y-6">
         <div>
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
-            Alternative senza glutine per
+            Alternative proposte per
           </p>
           <h1 className="text-xl font-bold">{dishName}</h1>
         </div>
+
+        <GlutenWarning />
 
         {loading && (
           <div className="flex items-center justify-center py-12">
@@ -123,8 +126,7 @@ export default function Results() {
             </h2>
             {m.products.length === 0 ? (
               <Card className="p-4 text-sm text-muted-foreground">
-                Nessun prodotto senza glutine trovato per questa categoria. Chiedi
-                all'admin di aggiungerne!
+                Nessun prodotto trovato per questa categoria.
               </Card>
             ) : (
               <div className="grid grid-cols-2 gap-3">

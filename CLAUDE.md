@@ -79,6 +79,7 @@ Columns: id, name, brand, description, image_url, product_url, category (`produc
 - `.env` is committed (contains `VITE_SUPABASE_*` — anon keys are public by design). Service role key is NOT in this repo — it lives only in Supabase Dashboard + Mission Control's Vercel env vars.
 - Capacitor `contentInset` is NOT set — we use CSS `env(safe-area-inset-*)` in `src/index.css` for status-bar handling.
 - Sfoglia category pills are loaded at runtime from `list_product_categories()` (empty categories hidden). A category added via Mission Control shows up automatically, with a label derived from its enum value and a 🏷️ emoji; add it to `KNOWN_CATEGORIES` in `src/pages/Sfoglia.tsx` for a nicer label/emoji and its position. The iOS app only picks up this behaviour after a new build.
+- New `SECURITY DEFINER` functions are callable by anyone with the public anon key unless you `REVOKE EXECUTE ... FROM PUBLIC, anon, authenticated` and grant `service_role` (see `20261030170000_restrict_admin_functions.sql`).
 
 ## Recent migrations applied to the live Supabase
 - `20260614180721_product_health_helpers.sql`

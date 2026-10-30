@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Star, ShoppingCart, ImageOff, Loader2, X } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { GlutenWarning } from "@/components/GlutenWarning";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthGate } from "@/hooks/useAuthGate";
@@ -334,9 +335,11 @@ export default function Sfoglia() {
             Sfoglia
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Esplora il catalogo gluten-free
+            Esplora il catalogo
           </p>
         </div>
+
+        <GlutenWarning />
 
         {/* Search bar */}
         <div className="relative">
