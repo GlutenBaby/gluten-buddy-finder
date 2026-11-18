@@ -147,6 +147,24 @@ serve(async (req) => {
           else candidates = data || [];
         }
 
+        // Pizza: oltre 300 prodotti contengono "pizz" nel nome (mix, farine,
+        // snack al gusto pizza…) e il limite di 120 può tagliare fuori le
+        // pizze vere. Aggiungiamo quindi i prodotti della categoria "pizza".
+        if (ing.category?.toLowerCase() === "pizza" || ingNameLower.startsWith("pizz")) {
+          const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .not("image_url", "is", null)
+            .neq("image_url", "")
+            .eq("category", "pizza")
+            .limit(200);
+          if (error) console.error("pizza category query error", error);
+          else {
+            const seen = new Set(candidates.map((c) => c.id));
+            candidates = candidates.concat((data || []).filter((d) => !seen.has(d.id)));
+          }
+        }
+
         // Filtro: il prodotto DEVE contenere il NOME dell'ingrediente
         // OPPURE almeno un visual trait (per matching estetico/formato).
         const ranked = candidates
@@ -198,7 +216,10 @@ serve(async (req) => {
             // ── Priorità prodotto finito vs preparato/farina ──
             // Quando l'ingrediente è un prodotto finito (es. "pane"),
             // premiamo i prodotti pronti e penalizziamo mix/farine/preparati.
-            const READY_PRODUCT_TERMS: Record<string, { boost: RegExp; penalize: RegExp }> = {
+            // `exclude`: prodotti che NON sono il prodotto cercato anche se ne
+            // contengono il nome (es. "crackers gusto pizza" per "pizza").
+            // `keep` salva comunque i nomi che lo matchano (es. "pizza snack surgelata").
+            const READY_PRODUCT_TERMS: Record<string, { boost: RegExp; penalize: RegExp; exclude?: RegExp; keep?: RegExp }> = {
               pane: {
                 boost: /\b(pane|pancarr[eé]|fett[eai]\b|cassetta|sandwich|tramezzin|pan\s)/i,
                 penalize: /\b(mix|preparato|preparati|farina|farine|lievito|impast)/i,
@@ -206,6 +227,10 @@ serve(async (req) => {
               pizza: {
                 boost: /\b(pizza|pizz[ae]|focaccia|base\s+pizza)/i,
                 penalize: /\b(mix|preparato|preparati|farina|farine|lievito|impast)/i,
+                // Snack/crackers "al gusto pizza", pizzoccheri, lieviti,
+                // formaggi "per pizza", ecc. Segnalato 18 Nov 2026.
+                exclude: /\b(gusto\s+pizz|aroma|al(?:la)?\s+pizza|pizzaiola|crackers?|chips|stixi|tock[eè]t|tarall|crostin|gallett|snack|schiacciatell|sfiziett|spikki|cornett|grissin|salatin|scaldatell|bruschett|pizzocch|pizzicott|lievit|istantane|grattugiat|mozzarella\s+vegetale|ristorante)|^farin/i,
+                keep: /surgelat/i,
               },
               pasta: {
                 boost: /\b(pasta|spaghet|pennett?[eai]|fusill|rigatoni|maccheroni|tagliatell|lasagn|gnocch)/i,
@@ -287,6 +312,12 @@ serve(async (req) => {
             const readyRule = READY_PRODUCT_TERMS[ingNameLower] ||
               (ing.category && READY_PRODUCT_TERMS[ing.category.toLowerCase()]);
             if (readyRule) {
+              if (
+                readyRule.exclude?.test(nameLower) &&
+                !readyRule.keep?.test(nameLower)
+              ) {
+                return { ...p, _score: 0, _mandatoryHit: false };
+              }
               if (readyRule.boost.test(nameLower)) score += 15;
               if (readyRule.penalize.test(nameLower)) score -= 10;
             }
