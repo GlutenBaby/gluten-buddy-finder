@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthGate } from "@/hooks/useAuthGate";
 import { toast } from "sonner";
+import { formatFoodName } from "@/lib/foodName";
 
 interface Product {
   id: string;
@@ -100,7 +101,7 @@ export default function Results() {
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             Alternative proposte per
           </p>
-          <h1 className="text-xl font-bold">{dishName}</h1>
+          <h1 className="text-xl font-bold">{formatFoodName(dishName)}</h1>
         </div>
 
         <GlutenWarning />
@@ -118,9 +119,9 @@ export default function Results() {
         {matches.map((m, i) => (
           <section key={i}>
             <h2 className="mb-3 text-base font-semibold">
-              🌾 {m.ingredient.name}{" "}
+              🌾 {formatFoodName(m.ingredient.name)}{" "}
               <Badge variant="secondary" className="ml-1 text-xs">
-                {m.ingredient.category}
+                {formatFoodName(m.ingredient.category)}
               </Badge>
             </h2>
             {m.products.length === 0 ? (
