@@ -38,11 +38,13 @@ REGOLE:
    - flavor: il gusto/variante ESATTO del prodotto fotografato, letto dalla confezione o dall'aspetto. Se è la versione base scrivi "classico" (es. crackers salati semplici → "classico salato"). Altrimenti il gusto: "rosmarino", "gusto pizza", "olive", "pomodoro", "sesamo", "integrale", "avena", "cioccolato"… NON inventare gusti che non vedi.
    - shape: la forma/formato, con queste parole quando applicabili: "rettangolari", "quadrati", "tondi", "mini" (crackerini piccoli), "quadretti", "crispy" (soffiati tipo gallette), "sfoglia sottile", "stick".
    Esempi:
-   - Crackers Saiwa/Mulino Bianco salati classici → name "crackers", category "snack", flavor "classico salato", shape "rettangolari", visual_traits ["crackers","classici","salati","rettangolari"]
-   - Crackers al rosmarino → flavor "rosmarino", visual_traits ["crackers","rosmarino"]
-   - Crackers integrali → flavor "integrale", visual_traits ["crackers","integrali"]
-   - Mini crackers / crackerini → shape "mini"
+   - Cracker Saiwa/Mulino Bianco salati classici → name "cracker", category "snack", flavor "classico salato", shape "rettangolari", visual_traits ["cracker","classici","salati","rettangolari"]
+   - Cracker al rosmarino → flavor "rosmarino", visual_traits ["cracker","rosmarino"]
+   - Cracker integrali → flavor "integrale", visual_traits ["cracker","integrali"]
+   - Mini cracker / crackerini → shape "mini"
    Nei visual_traits NON mettere gusti o ingredienti che il prodotto fotografato non ha.
+
+Scrivi i nomi in italiano corretto: le parole straniere sono invariabili al plurale ("cracker", non "crackers"; "snack", non "snacks").
 
 Rispondi SEMPRE chiamando lo strumento "report_food" con:
 - dish_name: nome leggibile in italiano

@@ -21,6 +21,7 @@ import {
   ImageOff,
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatFoodName } from "@/lib/foodName";
 import { supabase } from "@/integrations/supabase/client";
 
 const CATEGORIES = [
@@ -74,7 +75,7 @@ export default function Confirm() {
     }
     const { image, result } = JSON.parse(raw);
     setImage(image);
-    setDishName(result?.dish_name || "");
+    setDishName(formatFoodName(result?.dish_name));
     setIngredients(result?.gluten_ingredients || []);
   }, [navigate]);
 
@@ -210,9 +211,9 @@ export default function Confirm() {
                   key={i}
                   className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
                 >
-                  <span className="font-medium text-foreground">{ing.name}</span>
+                  <span className="font-medium text-foreground">{formatFoodName(ing.name)}</span>
                   <Badge variant="secondary" className="text-[10px]">
-                    {ing.category}
+                    {formatFoodName(ing.category)}
                   </Badge>
                   <button
                     type="button"
