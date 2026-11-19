@@ -34,6 +34,16 @@ REGOLE:
    - Foto di "Kinder Paradiso" → visual_traits: ["merendina","pan di spagna","ripieno latte","soffice","ovale"]
    Usa parole italiane brevi (1-3 per trait), descrivi ingredienti visibili (gocce, cacao, nocciole, miele), forma (frollini, wafer, fette, tondi, stelle, plumcake, ovale), tipologia (merendine, snack, biscotti secchi).
 
+5. GUSTO E FORMA (obbligatori per i prodotti): l'utente vuole come PRIMI risultati prodotti il più possibile UGUALI a quello fotografato, anche nella forma. Compila quindi:
+   - flavor: il gusto/variante ESATTO del prodotto fotografato, letto dalla confezione o dall'aspetto. Se è la versione base scrivi "classico" (es. crackers salati semplici → "classico salato"). Altrimenti il gusto: "rosmarino", "gusto pizza", "olive", "pomodoro", "sesamo", "integrale", "avena", "cioccolato"… NON inventare gusti che non vedi.
+   - shape: la forma/formato, con queste parole quando applicabili: "rettangolari", "quadrati", "tondi", "mini" (crackerini piccoli), "quadretti", "crispy" (soffiati tipo gallette), "sfoglia sottile", "stick".
+   Esempi:
+   - Crackers Saiwa/Mulino Bianco salati classici → name "crackers", category "snack", flavor "classico salato", shape "rettangolari", visual_traits ["crackers","classici","salati","rettangolari"]
+   - Crackers al rosmarino → flavor "rosmarino", visual_traits ["crackers","rosmarino"]
+   - Crackers integrali → flavor "integrale", visual_traits ["crackers","integrali"]
+   - Mini crackers / crackerini → shape "mini"
+   Nei visual_traits NON mettere gusti o ingredienti che il prodotto fotografato non ha.
+
 Rispondi SEMPRE chiamando lo strumento "report_food" con:
 - dish_name: nome leggibile in italiano
 - kind: "product" se prodotto singolo, "dish" se piatto composto
@@ -42,6 +52,8 @@ Rispondi SEMPRE chiamando lo strumento "report_food" con:
    - category: una di [pasta, biscotti, pane, farina, dolci, snack, cereali, pizza, bevande, altro]
    - search_keywords: 1-3 parole chiave per il database
    - visual_traits: array di tratti visivi/formato per matching estetico (vedi regola 4)
+   - flavor: gusto/variante del prodotto fotografato (regola 5), "classico" se versione base
+   - shape: forma/formato del prodotto fotografato (regola 5)
    - description: breve descrizione opzionale
 
 Se non vedi alcun alimento, restituisci gluten_ingredients vuoto.`;
@@ -130,6 +142,8 @@ serve(async (req) => {
                             type: "array",
                             items: { type: "string" },
                           },
+                          flavor: { type: "string" },
+                          shape: { type: "string" },
                           description: { type: "string" },
                         },
                         required: ["name", "category", "search_keywords", "visual_traits"],

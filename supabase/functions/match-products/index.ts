@@ -12,6 +12,46 @@ interface Ingredient {
   category: string;
   description?: string;
   search_keywords?: string[];
+  visual_traits?: string[];
+  flavor?: string;
+  shape?: string;
+}
+
+// ── Somiglianza col prodotto fotografato ──────────────────────────────────
+// Varianti riconoscibili dal nome prodotto: gusto, base/impasto e formato.
+// Se il prodotto in catalogo ha una variante che la foto NON ha (es. foto di
+// crackers classici → "Crackers gusto pizza", "Crackers di avena con timo")
+// lo spingiamo in fondo; se la condivide lo portiamo in cima.
+// Segnalato 19 Nov 2026: foto di crackers → primi risultati gusto pizza/avena.
+const VARIANT_MARKERS: RegExp[] = [
+  // gusto
+  /pizz/, /rosmarin/, /\bolive\b/, /pomodor/, /origan/, /\btimo\b/, /paprika/,
+  /formagg|cheese/, /bbq|barbecue/, /\bpepe\b|pepper/, /tartuf/, /\berbe\b|herb/,
+  /spicy|piccant|mexican/, /sesam/, /\bsemi\b|seed/, /\bchia\b/, /zucca/,
+  /cipoll/, /nocciol/, /cioccolat|cacao/, /basilic/, /curcuma/, /aglio/,
+  // base / impasto
+  /avena|\boat/, /legum|\bceci\b|lenticch|pisell/, /quinoa/, /saracen/,
+  /integral|wholegrain/, /multicereal|\bcereali\b/, /\briso\b/, /\bmais\b/, /keto/,
+  /piadin/,
+  // formato
+  /\bmini\b|crackerini|bocconcin/, /quadrett/, /crispy|soffiat|gallett/, /\bstick/,
+];
+const PLAIN_RE = /classic|original|salat|\bsale\b|natural|semplic/;
+
+function similarityScore(productName: string, photoDescriptor: string): number {
+  let sim = 0;
+  let mismatches = 0;
+  for (const re of VARIANT_MARKERS) {
+    const inProduct = re.test(productName);
+    if (!inProduct) continue;
+    if (re.test(photoDescriptor)) sim += 8;
+    else { sim -= 8; mismatches++; }
+  }
+  // Foto di un prodotto "classico" → premia i classici senza varianti extra
+  if (mismatches === 0 && PLAIN_RE.test(photoDescriptor)) {
+    sim += PLAIN_RE.test(productName) ? 8 : 4;
+  }
+  return sim;
 }
 
 // Categorie che esistono effettivamente nell'enum del DB
@@ -63,6 +103,8 @@ serve(async (req) => {
       if (t.endsWith("i")) variants.add(t.slice(0, -1) + "o");
       if (t.endsWith("a")) variants.add(t.slice(0, -1) + "e");
       if (t.endsWith("o")) variants.add(t.slice(0, -1) + "i");
+      // Plurali inglesi: "crackers" → "cracker" (molti nomi sono al singolare)
+      if (t.endsWith("s")) variants.add(t.slice(0, -1));
       return Array.from(variants);
     };
 
@@ -70,6 +112,14 @@ serve(async (req) => {
       ingredients.map(async (ing) => {
         const ingNameLower = ing.name.toLowerCase().trim();
         const isGenericIngredient = GENERIC_TERMS.has(ingNameLower);
+        // Tutto ciò che sappiamo del prodotto fotografato, per la somiglianza
+        const photoDescriptor = [
+          ing.name,
+          ing.flavor,
+          ing.shape,
+          ...(ing.search_keywords || []),
+          ...(ing.visual_traits || []),
+        ].filter(Boolean).join(" ").toLowerCase();
 
         // MANDATORY terms: il nome dell'ingrediente (e sue varianti morfologiche
         // dirette) DEVE comparire nel nome del prodotto. Le search_keywords NON
@@ -142,7 +192,7 @@ serve(async (req) => {
             .not("image_url", "is", null)
             .neq("image_url", "")
             .or(orFilters)
-            .limit(120);
+            .limit(250);
           if (error) console.error("keyword query error", error);
           else candidates = data || [];
         }
@@ -252,6 +302,15 @@ serve(async (req) => {
               boost: /\b(merendin|plumcake|brioche|brioss|girella|tegolino|saccottin|panettonc|crostatin|wafer|barrett|snack|pan\s+di\s+spagna|soffic|torta|muffin|cupcake|biscott|frollin|cioccolat)/i,
               penalize: /\b(farina|farine|mix|preparato|preparati|semola|lievito|impast|pasta\s+secca|spaghet|penn[ei]|fusill|rigatoni)/i,
             },
+            // Crackers: solo crackers veri, non grissini/gallette/ricette.
+            crackers: {
+              boost: /cracker/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati|grissin|tarall|biscott|ricetta)/i,
+            },
+            cracker: {
+              boost: /cracker/i,
+              penalize: /\b(farina|farine|mix|preparato|preparati|grissin|tarall|biscott|ricetta)/i,
+            },
             snack: {
               boost: /\b(snack|merendin|barrett|wafer|crackers?|grissin|tarallin|patatin|pop\s?corn|crostin|sfizio|chips)/i,
               penalize: /\b(farina|farine|mix|preparato|preparati|semola|lievito|pasta\s+secca|spaghet)/i,
@@ -325,7 +384,10 @@ serve(async (req) => {
             return { ...p, _score: score, _mandatoryHit: mandatoryHit };
           })
           .filter((p) => p._mandatoryHit && p._score >= 8)
-          .sort((a, b) => b._score - a._score)
+          // La somiglianza al prodotto fotografato (gusto/forma/impasto) serve
+          // solo a ordinare: non esclude prodotti già ammessi.
+          .map((p) => ({ ...p, _rank: p._score + similarityScore((p.name || "").toLowerCase(), photoDescriptor) }))
+          .sort((a, b) => b._rank - a._rank)
           .slice(0, 12);
 
         return {
