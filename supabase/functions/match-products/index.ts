@@ -47,8 +47,11 @@ function similarityScore(productName: string, photoDescriptor: string): number {
     if (re.test(photoDescriptor)) sim += 8;
     else { sim -= 8; mismatches++; }
   }
-  // Foto di un prodotto "classico" → premia i classici senza varianti extra
-  if (mismatches === 0 && PLAIN_RE.test(photoDescriptor)) {
+  // Foto di un prodotto "classico" (o senza alcun gusto/variante indicato)
+  // → premia i classici senza varianti extra
+  const photoIsPlain = PLAIN_RE.test(photoDescriptor) ||
+    !VARIANT_MARKERS.some((re) => re.test(photoDescriptor));
+  if (mismatches === 0 && photoIsPlain) {
     sim += PLAIN_RE.test(productName) ? 8 : 4;
   }
   return sim;
