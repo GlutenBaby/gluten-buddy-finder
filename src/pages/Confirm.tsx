@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatFoodName } from "@/lib/foodName";
+import { isNaturallyGlutenFree } from "@/lib/glutenFree";
 import { supabase } from "@/integrations/supabase/client";
 
 const CATEGORIES = [
@@ -146,6 +147,13 @@ export default function Confirm() {
     setNewName("");
   }
 
+  // The known gluten-free list wins over the AI; otherwise trust the AI's
+  // flag, and treat a missing flag (manual add / old scan) as gluten.
+  function hasGluten(ing: Ingredient) {
+    if (isNaturallyGlutenFree(ing.name)) return false;
+    return ing.contains_gluten !== false;
+  }
+
   function renderGroup(
     title: string,
     subtitle: string | undefined,
@@ -254,7 +262,7 @@ export default function Confirm() {
                 undefined,
                 ingredients
                   .map((ing, i) => ({ ing, i }))
-                  .filter(({ ing }) => ing.contains_gluten !== false),
+                  .filter(({ ing }) => hasGluten(ing)),
                 "Nessun ingrediente con glutine rilevato ✅",
               )}
               {renderGroup(
@@ -262,7 +270,7 @@ export default function Confirm() {
                 "Naturalmente senza glutine: ti mostriamo comunque le versioni certificate.",
                 ingredients
                   .map((ing, i) => ({ ing, i }))
-                  .filter(({ ing }) => ing.contains_gluten === false),
+                  .filter(({ ing }) => !hasGluten(ing)),
               )}
             </>
           )}
