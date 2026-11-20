@@ -42,6 +42,10 @@ interface Ingredient {
   category: string;
   description?: string;
   search_keywords?: string[];
+  /** From the AI. false = naturally gluten-free (uova, latte…), still
+   *  searchable for a certified version. Missing (manual add / old scan)
+   *  is treated as "contains gluten". */
+  contains_gluten?: boolean;
 }
 
 interface PreviewProduct {
@@ -142,6 +146,50 @@ export default function Confirm() {
     setNewName("");
   }
 
+  function renderGroup(
+    title: string,
+    subtitle: string | undefined,
+    items: { ing: Ingredient; i: number }[],
+    emptyText?: string,
+  ) {
+    if (items.length === 0 && !emptyText) return null;
+    return (
+      <div>
+        <h3 className="mb-1 text-sm font-semibold">
+          {title} ({items.length})
+        </h3>
+        {subtitle && (
+          <p className="mb-2 text-xs text-muted-foreground">{subtitle}</p>
+        )}
+        {items.length === 0 ? (
+          <p className="text-xs text-muted-foreground">{emptyText}</p>
+        ) : (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {items.map(({ ing, i }) => (
+              <div
+                key={i}
+                className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
+              >
+                <span className="font-medium text-foreground">{formatFoodName(ing.name)}</span>
+                <Badge variant="secondary" className="text-[10px]">
+                  {formatFoodName(ing.category)}
+                </Badge>
+                <button
+                  type="button"
+                  onClick={() => removeIngredient(i)}
+                  className="ml-0.5 grid h-5 w-5 place-items-center rounded-full text-muted-foreground hover:bg-secondary"
+                  aria-label={`Rimuovi ${ing.name}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function confirm() {
     if (ingredients.length === 0) {
       toast.error("Aggiungi almeno un ingrediente da cercare");
@@ -189,12 +237,7 @@ export default function Confirm() {
           </div>
         </div>
 
-        <div>
-          {ingredients.length > 0 && (
-            <h3 className="mb-2 text-sm font-semibold">
-              Ingredienti con glutine ({ingredients.length})
-            </h3>
-          )}
+        <div className="space-y-4">
           {ingredients.length === 0 ? (
             <div className="rounded-lg border border-dashed border-primary/30 bg-primary/5 p-4 text-center space-y-1">
               <p className="text-sm font-semibold text-primary">
@@ -205,27 +248,23 @@ export default function Confirm() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {ingredients.map((ing, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm"
-                >
-                  <span className="font-medium text-foreground">{formatFoodName(ing.name)}</span>
-                  <Badge variant="secondary" className="text-[10px]">
-                    {formatFoodName(ing.category)}
-                  </Badge>
-                  <button
-                    type="button"
-                    onClick={() => removeIngredient(i)}
-                    className="ml-0.5 grid h-5 w-5 place-items-center rounded-full text-muted-foreground hover:bg-secondary"
-                    aria-label={`Rimuovi ${ing.name}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <>
+              {renderGroup(
+                "Ingredienti con glutine",
+                undefined,
+                ingredients
+                  .map((ing, i) => ({ ing, i }))
+                  .filter(({ ing }) => ing.contains_gluten !== false),
+                "Nessun ingrediente con glutine rilevato ✅",
+              )}
+              {renderGroup(
+                "Ingredienti senza glutine",
+                "Naturalmente senza glutine: ti mostriamo comunque le versioni certificate.",
+                ingredients
+                  .map((ing, i) => ({ ing, i }))
+                  .filter(({ ing }) => ing.contains_gluten === false),
+              )}
+            </>
           )}
         </div>
 

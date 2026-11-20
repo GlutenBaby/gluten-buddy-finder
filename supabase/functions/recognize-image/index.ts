@@ -26,6 +26,13 @@ REGOLE:
 
 3. Non includere ingredienti banali (acqua, sale, olio, pepe, zucchero).
 
+3bis. CONTIENE GLUTINE? Per OGNI ingrediente indica contains_gluten in modo RIGOROSO e corretto per un celiaco:
+   - true SOLO se l'ingrediente nella sua forma comune contiene glutine: frumento/grano (farina 00, semola), orzo, segale, farro, kamut, avena non certificata, e i prodotti fatti con questi (pasta, pane, pangrattato, biscotti, savoiardi, pan di spagna, sfoglia per lasagne, pizza, cracker, merendine, cereali da colazione con frumento/orzo, birra, malto d'orzo, seitan, cous cous).
+   - false per gli ingredienti NATURALMENTE senza glutine, anche se esistono versioni certificate: uova, latte, panna, burro, yogurt, mascarpone, ricotta, formaggi stagionati (parmigiano, pecorino), carne, pesce, guanciale, frutta, verdura, legumi, riso, mais, patate, cacao amaro, caffè, zucchero, miele, cioccolato fondente.
+   - Esempio Ciambellone → farina (true), uova (false), latte (false).
+   - Esempio Carbonara → spaghetti (true), guanciale (false), pecorino (false), uova (false).
+   - Nel dubbio per prodotti trasformati (salumi, besciamella, ragù pronto, creme) usa true solo se la ricetta tradizionale usa farina di frumento (es. besciamella → true).
+
 4. SOMIGLIANZA VISIVA: per OGNI ingrediente devi ANCHE descrivere le caratteristiche visive/formato del prodotto fotografato, in modo da poter trovare alternative senza glutine simili nell'aspetto. Esempi:
    - Foto di "Gocciole" Pavesi → visual_traits: ["gocce di cioccolato","gocce cioccolato","frollini","frollino","cioccolato","chocolate chips"]
    - Foto di "Pan di Stelle" Mulino Bianco → visual_traits: ["cacao","cocoa","nocciole","frollini","frollino","stelline","cioccolato"]
@@ -56,6 +63,7 @@ Rispondi SEMPRE chiamando lo strumento "report_food" con:
    - visual_traits: array di tratti visivi/formato per matching estetico (vedi regola 4)
    - flavor: gusto/variante del prodotto fotografato (regola 5), "classico" se versione base
    - shape: forma/formato del prodotto fotografato (regola 5)
+   - contains_gluten: true/false secondo la regola 3bis
    - description: breve descrizione opzionale
 
 Se non vedi alcun alimento, restituisci gluten_ingredients vuoto.`;
@@ -98,7 +106,7 @@ serve(async (req) => {
               content: [
                 {
                   type: "text",
-                  text: "Analizza questa foto e identifica eventuali ingredienti con glutine.",
+                  text: "Analizza questa foto, elenca gli ingredienti e indica per ognuno se contiene glutine.",
                 },
                 { type: "image_url", image_url: { url: imageDataUrl } },
               ],
@@ -147,8 +155,9 @@ serve(async (req) => {
                           flavor: { type: "string" },
                           shape: { type: "string" },
                           description: { type: "string" },
+                          contains_gluten: { type: "boolean" },
                         },
-                        required: ["name", "category", "search_keywords", "visual_traits"],
+                        required: ["name", "category", "search_keywords", "visual_traits", "contains_gluten"],
                         additionalProperties: false,
                       },
                     },
